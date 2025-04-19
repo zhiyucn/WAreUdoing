@@ -25,15 +25,19 @@
 <body>
     <fluent-card>
         <h1>创建新会话</h1>
+        <fluent-text-field id="username" placeholder="请输入用户名"></fluent-text-field>
+        <fluent-text-field id="password" type="password" placeholder="请输入密码"></fluent-text-field>
         <fluent-text-field id="sessionName" placeholder="请输入会话名称"></fluent-text-field>
         <fluent-checkbox id="privacyAgreement">我已阅读并同意隐私保护协议</fluent-checkbox>
         <fluent-button appearance="accent" id="confirmNewSession">确认创建</fluent-button>
         <script>
             document.getElementById('confirmNewSession').addEventListener('click', () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
                 const name = document.getElementById('sessionName').value;
                 const agreed = document.getElementById('privacyAgreement').checked;
-                if (!name || !agreed) {
-                    alert('请填写会话名称并同意隐私协议');
+                if (!username || !password || !name || !agreed) {
+                    alert('请填写所有字段并同意隐私协议');
                     return;
                 }
                 
@@ -41,10 +45,23 @@
                 form.method = 'POST';
                 form.action = '/new_session';
                 
+                const usernameInput = document.createElement('input');
+                usernameInput.type = 'hidden';
+                usernameInput.name = 'username';
+                usernameInput.value = username;
+                
+                const passwordInput = document.createElement('input');
+                passwordInput.type = 'hidden';
+                passwordInput.name = 'password';
+                passwordInput.value = password;
+                
                 const nameInput = document.createElement('input');
                 nameInput.type = 'hidden';
                 nameInput.name = 'name';
                 nameInput.value = name;
+                
+                form.appendChild(usernameInput);
+                form.appendChild(passwordInput);
                 
                 form.appendChild(nameInput);
                 document.body.appendChild(form);

@@ -1,0 +1,6 @@
+nuitka-crash-report.xml
+/client.dist/
+/client.build/
+/client.onefile-build/
+./.venv/
+client.exe

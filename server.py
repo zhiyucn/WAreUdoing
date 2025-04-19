@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify, render_template, redirect
 from datetime import datetime
 import uuid
+import hashlib
+from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 
 import json
@@ -27,13 +29,16 @@ sessions = load_sessions()
 @app.route('/api', methods=['POST'])
 def api():
     data = request.json
-    api_key = data.get('api_key')
-    if api_key not in sessions:
-        return jsonify({'error': '无效的API密钥'}), 401
+    username = data.get('username')
+    password = data.get('password')
+    
+    if username not in sessions or not check_password_hash(sessions[username]['password'], password):
+        return jsonify({'error': '无效的用户名或密码'}), 401
     
     # 更新会话数据
-    sessions[api_key] = {
-        'name': sessions[api_key].get('name', ''),
+    sessions[username] = {
+        'name': sessions[username].get('name', ''),
+        'password': sessions[username]['password'],
         'processes': data.get('processes'),
         'battery_percent': data.get('battery_percent'),
         'cpu_percent': data.get('cpu_percent'),
@@ -59,13 +64,19 @@ def new_session():
     if request.method == 'GET':
         return render_template('new_session.html')
     
+    username = request.form.get('username')
+    password = request.form.get('password')
     session_name = request.form.get('name')
-    if not session_name:
+    
+    if not username or not password or not session_name:
         return render_template('new_session.html')
     
-    api_key = str(uuid.uuid4())
-    sessions[api_key] = {
+    if username in sessions:
+        return render_template('new_session.html', error='用户名已存在')
+    
+    sessions[username] = {
         'name': session_name,
+        'password': generate_password_hash(password),
         'processes': [],
         'battery_percent': 0,
         'cpu_percent': 0,
@@ -74,7 +85,7 @@ def new_session():
         'last_update': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
     save_sessions(sessions)
-    return redirect(f'/congrats?key={api_key}')
+    return redirect(f'/congrats?key={username}')
 
 @app.route('/congrats')
 def congrats():
