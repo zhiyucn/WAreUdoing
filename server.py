@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect
 from datetime import datetime
+import eventlet
 import uuid
 app = Flask(__name__)
 
@@ -84,4 +85,7 @@ def congrats():
     return render_template('congrats.html', api_key=api_key, name=sessions[api_key]['name'])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    from gevent.pywsgi import WSGIServer
+    http_server = WSGIServer(('', 5000), app)
+    http_server.serve_forever()
+    #app.run(debug=True)
