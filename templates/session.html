@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Session Details</title>
+    <link rel="stylesheet" href="https://unpkg.com/@fluentui/web-components@2.0.0/dist/web-components.min.css">
+    <script type="module" src="https://unpkg.com/@fluentui/web-components@2.0.0/dist/web-components.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        fluent-card {
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+        }
+        fluent-button {
+            margin-top: 10px;
+        }
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        li {
+            padding: 8px 12px;
+            background-color: var(--fill-color-subtle-secondary);
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+        li:hover {
+            background-color: var(--fill-color-subtle-tertiary);
+        }
+        #toggleButton {
+            margin-top: 10px;
+            background: none;
+            border: none;
+            color: var(--color-brand-foreground1);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        #toggleButton:hover {
+            background-color: var(--fill-color-subtle-secondary);
+        }
+    </style>
+</head>
+<body>
+    <fluent-card>
+        <h1>会话详情</h1>
+        <p>最后更新: {{ session.last_update }}</p>
+        {% set last_update = session.last_update|string %}
+        {% set now = datetime.now().strftime('%Y-%m-%d %H:%M:%S') %}
+        {% set time_diff = (datetime.strptime(now, '%Y-%m-%d %H:%M:%S') - datetime.strptime(last_update, '%Y-%m-%d %H:%M:%S')).total_seconds() %}
+        {% if time_diff > 120 %}
+            <fluent-alert severity="warning">会话已断开连接，信息具有滞后性</fluent-alert>
+        {% endif %}
+        
+        <h2>运行中的进程:</h2>
+        <ul id="processList" style="padding-left: 20px;">
+            {% for process in session.processes[:5] %}
+                <li>{{ process }}</li>
+            {% endfor %}
+            {% if session.processes|length > 5 %}
+                <div id="moreProcesses" style="display: none;">
+                    {% for process in session.processes[5:] %}
+                        <li>{{ process }}</li>
+                    {% endfor %}
+                </div>
+                <button id="toggleButton" style="margin-top: 10px; background: none; border: none; color: #0078d4; cursor: pointer;">显示更多</button>
+            {% endif %}
+        </ul>
+        <script>
+            document.getElementById('toggleButton')?.addEventListener('click', () => {
+                const moreProcesses = document.getElementById('moreProcesses');
+                const button = document.getElementById('toggleButton');
+                if (moreProcesses.style.display === 'none') {
+                    moreProcesses.style.display = 'block';
+                    button.textContent = '收起';
+                } else {
+                    moreProcesses.style.display = 'none';
+                    button.textContent = '显示更多';
+                }
+            });
+        </script>
+        
+        <h2>电池百分比:</h2>
+        <fluent-progress value="{{ session.battery_percent }}" max="100"></fluent-progress>
+        <p>{{ session.battery_percent }}%</p>
+        <h2>CPU使用率:</h2>
+        <fluent-progress value="{{ session.cpu_percent }}" max="100"></fluent-progress>
+        <p>{{ session.cpu_percent }}%</p>
+        
+        <h2>内存使用情况:</h2>
+        <fluent-progress value="{{ session.memory_usage }}" max="100"></fluent-progress>
+        <p>{{ session.memory_usage }}%</p>
+        
+        <h2>网络状态:</h2>
+        <p>发送: {{ session.network_stats.bytes_sent }} bytes</p>
+        <p>接收: {{ session.network_stats.bytes_recv }} bytes</p>
+        
+        <fluent-button appearance="accent" onclick="window.location.href='/';">返回会话列表</fluent-button>
+    </fluent-card>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sessions</title>
+    <link rel="stylesheet" href="https://unpkg.com/@fluentui/web-components@2.0.0/dist/web-components.min.css">
+    <script type="module" src="https://unpkg.com/@fluentui/web-components@2.0.0/dist/web-components.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        fluent-card {
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2.4px 4.8px 0 rgba(0, 0, 0, 0.132), 0 0.6px 1.2px 0 rgba(0, 0, 0, 0.108);
+        }
+        fluent-button {
+            margin-top: 10px;
+        }
+        fluent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <fluent-card>
+        <h1>活动会话</h1>
+        <fluent-list>
+            {% for api_key, session in sessions.items() %}
+                <fluent-list-item>
+                    <fluent-anchor href="/session/{{ api_key }}">{{ session.name }}</fluent-anchor> - 最后更新: {{ session.last_update }}
+                </fluent-list-item>
+            {% endfor %}
+        </fluent-list>
+        <fluent-button appearance="accent" id="newSessionBtn">创建新会话</fluent-button>
+        <script>
+            document.getElementById('newSessionBtn').addEventListener('click', () => {
+                window.location.href = '/new_session';
+            });
+        </script>
+    </fluent-card>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>配置成功</title>
+    <link rel="stylesheet" href="https://unpkg.com/@fluentui/web-components@2.0.0/dist/web-components.min.css">
+    <script type="module" src="https://unpkg.com/@fluentui/web-components@2.0.0/dist/web-components.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        fluent-card {
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+        }
+        fluent-button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <fluent-card>
+        <h1>配置成功</h1>
+        <p>您的会话已成功创建！请按照以下步骤配置客户端：</p>
+        <ol>
+            <li>复制下方的API密钥</li>
+            <li>在客户端程序中粘贴该密钥</li>
+            <li>运行客户端程序</li>
+        </ol>
+        <fluent-text-field id="apiKey" readonly></fluent-text-field>
+        <fluent-button appearance="accent" id="copyButton">复制密钥</fluent-button>
+        <script>
+            const apiKey = "{{ api_key }}";
+            const name = "{{ name }}";
+            
+            document.getElementById('apiKey').value = apiKey;
+            document.getElementById('copyButton').addEventListener('click', () => {
+                navigator.clipboard.writeText(apiKey);
+                alert('API密钥已复制到剪贴板');
+            });
+        </script>
+    </fluent-card>
+</body>
+</html>

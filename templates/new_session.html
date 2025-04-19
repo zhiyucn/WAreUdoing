@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>创建新会话</title>
+    <link rel="stylesheet" href="https://unpkg.com/@fluentui/web-components@2.0.0/dist/web-components.min.css">
+    <script type="module" src="https://unpkg.com/@fluentui/web-components@2.0.0/dist/web-components.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        fluent-card {
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+        }
+        fluent-button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <fluent-card>
+        <h1>创建新会话</h1>
+        <fluent-text-field id="sessionName" placeholder="请输入会话名称"></fluent-text-field>
+        <fluent-checkbox id="privacyAgreement">我已阅读并同意隐私保护协议</fluent-checkbox>
+        <fluent-button appearance="accent" id="confirmNewSession">确认创建</fluent-button>
+        <script>
+            document.getElementById('confirmNewSession').addEventListener('click', () => {
+                const name = document.getElementById('sessionName').value;
+                const agreed = document.getElementById('privacyAgreement').checked;
+                if (!name || !agreed) {
+                    alert('请填写会话名称并同意隐私协议');
+                    return;
+                }
+                
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/new_session';
+                
+                const nameInput = document.createElement('input');
+                nameInput.type = 'hidden';
+                nameInput.name = 'name';
+                nameInput.value = name;
+                
+                form.appendChild(nameInput);
+                document.body.appendChild(form);
+                form.submit();
+            });
+        </script>
+    </fluent-card>
+</body>
+</html>
